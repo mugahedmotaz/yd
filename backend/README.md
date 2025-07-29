@@ -24,6 +24,15 @@ Backend service for YouTube Downloader application built with Node.js, Express, 
    npm start
    ```
 
+## Troubleshooting
+
+If you encounter issues with missing dependencies when deploying to Render:
+
+1. Make sure all files including `package.json` are committed to your repository
+2. Ensure that `node_modules` is not committed to your repository (it should be in `.gitignore`)
+3. Render will automatically run `npm install` during deployment
+4. If issues persist, try clearing the build cache in Render dashboard
+
 ## API Endpoints
 
 ### POST /api/download

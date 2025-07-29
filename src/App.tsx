@@ -48,7 +48,7 @@ function App() {
     setResponse(null);
 
     try {
-      const response = await fetch('https://mugahed-download.onrender.com/api/download', {
+      const response = await fetch('/api/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -180,7 +180,7 @@ function App() {
               <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
               <p className="text-xl font-medium text-gray-800 mb-2">جاري المعالجة...</p>
               <p className="text-gray-600 text-center max-w-md">
-                يتم الآن إعداد الملف المطلوب، يرجى الانتظار قليلاً بينما نجهز التنزيل لل sẵn للاستخدام.
+                يتم الآن إعداد الملف المطلوب<br/> يرجى الانتظار قليلاً بينما نجهز التنزيل   للاستخدام.
               </p>
             </div>
           )}
