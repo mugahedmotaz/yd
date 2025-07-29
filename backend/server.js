@@ -35,6 +35,24 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.json({
+    message: 'YouTube Downloader Backend is running!',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+// Test endpoint
+app.get('/api/test', (req, res) => {
+  res.json({
+    success: true,
+    message: 'API is working!',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Endpoint to handle download requests
 app.post('/api/download', async (req, res) => {
   const { url, type } = req.body;
