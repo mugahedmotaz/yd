@@ -75,14 +75,7 @@ app.post('/api/download', async (req, res) => {
     const info = await youtubedl(url, {
       dumpSingleJson: true,
       noCheckCertificates: true,
-      noWarnings: true,
-      preferFreeFormats: true,
-      addHeader: [
-        'referer:youtube.com',
-        'user-agent:Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3'
-      ],
-      ignoreErrors: true,
-      extractFlat: false
+      noWarnings: true
     });
     
     console.log('youtube-dl-exec completed successfully');
