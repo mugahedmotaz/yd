@@ -104,6 +104,7 @@ function App() {
                     type="text"
                     id="url"
                     value={url}
+                    autoComplete='off'
                     onChange={handleUrlChange}
                     placeholder="https://www.youtube.com/watch?v=..."
                     className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${urlError ? 'border-red-300 bg-red-50' : 'border-gray-300'
