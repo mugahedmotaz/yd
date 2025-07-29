@@ -63,6 +63,8 @@
    - Build Command: `npm install`
    - Start Command: `npm start`
    - Root Directory: `backend`
+   
+   أو يمكنك استخدام ملف `render.yaml` المتوفر في المشروع والذي يحتوي على جميع الإعدادات المطلوبة.
 6. انقر على Create Web Service
 
 7. بعد اكتمال النشر، ستحصل على عنوان URL للخدمة. يجب عليك تحديث ملف `src/App.tsx` في المشروع الرئيسي لاستخدام هذا العنوان بدلاً من العنوان المحلي:
