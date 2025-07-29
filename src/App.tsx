@@ -48,7 +48,7 @@ function App() {
     setResponse(null);
 
     try {
-      const response = await fetch('/api/download', {
+      const response = await fetch('https://mugahed-download.onrender.com/api/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
