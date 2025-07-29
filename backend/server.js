@@ -3,6 +3,7 @@ import cors from 'cors';
 import youtubedl from 'youtube-dl-exec';
 
 const app = express();
+// Use Render's PORT environment variable or default to 4000
 const PORT = process.env.PORT || 4000;
 
 // Enable CORS for all origins (you can restrict this in production)
@@ -151,6 +152,18 @@ app.post('/api/download', async (req, res) => {
     if (e.message && e.message.includes('spawn')) {
       console.log('Returning 500: Spawn error (youtube-dl not found)');
       return res.status(500).json({ success: false, error: 'YouTube downloader service is not available on this server' });
+    }
+    
+    // Handle EACCES permission errors
+    if (e.message && e.message.includes('EACCES')) {
+      console.log('Returning 500: Permission error');
+      return res.status(500).json({ success: false, error: 'Server does not have permission to access YouTube downloader' });
+    }
+    
+    // Handle ENOENT errors (file not found)
+    if (e.message && e.message.includes('ENOENT')) {
+      console.log('Returning 500: File not found error');
+      return res.status(500).json({ success: false, error: 'Required downloader components are missing on server' });
     }
     
     console.log('Returning 500: General error');

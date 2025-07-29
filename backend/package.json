@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "npm install"
+    "build": "npm install",
+    "postinstall": "npx youtube-dl-exec --version || echo 'youtube-dl not available, but continuing'"
   },
   "keywords": [],
   "author": "Mugahed Motaz",

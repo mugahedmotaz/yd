@@ -105,25 +105,30 @@ Download a YouTube video or audio.
 
 ## Deployment on Render
 
-1. Connect your GitHub repository to Render
-2. Create a new Web Service
-3. Use the `render.yaml` file in the root directory for automatic configuration
+1. Create a new web service on Render
+2. Connect your GitHub repository
+3. Set the following configuration:
+   - Build Command: `npm install`
+   - Start Command: `npm start`
+   - Root Directory: `backend`
+   - Environment Variables:
+     - `NODE_ENV`: `production`
+4. Deploy the service
+5. Note the deployed URL for use in the frontend
 
-### Manual Configuration
+## Redeployment
 
-If not using `render.yaml`:
+After making changes to the backend:
+1. Push your changes to GitHub
+2. Trigger a new deployment on Render
+3. Wait for the deployment to complete
+4. Test the endpoints to ensure they're working
 
-- **Root Directory**: `backend`
-- **Build Command**: `npm install`
-- **Start Command**: `npm start`
-- **Environment**: Node
-- **Node Version**: 18
+## Common Issues and Solutions
 
-### Environment Variables on Render
-
-- `NODE_ENV`: `production`
-- `PORT`: Leave empty (Render will set automatically)
-- `ALLOWED_ORIGINS`: Your frontend domain(s)
+1. **Port Configuration**: Render automatically assigns a PORT environment variable. The server now properly uses this variable.
+2. **youtube-dl Issues**: Added postinstall script to verify youtube-dl availability.
+3. **Permission Errors**: Added specific error handling for common permission and file access issues.
 
 ## Dependencies
 
