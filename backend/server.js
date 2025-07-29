@@ -128,14 +128,24 @@ app.post('/api/download', async (req, res) => {
     console.error('Error type:', e.constructor.name);
     
     // Handle specific youtube-dl errors
-    if (e.message && e.message.includes('This content isn\'t available')) {
+    if (e.message && (e.message.includes('This content isn\'t available') || e.message.includes("This content isn't available"))) {
       console.log('Returning 404: Content not available');
-      return res.status(404).json({ success: false, error: 'This content isn\'t available on YouTube' });
+      return res.status(404).json({ success: false, error: 'هذا المحتوى غير متاح على YouTube. جرب رابط فيديو آخر.' });
     }
     
     if (e.message && e.message.includes('Video unavailable')) {
       console.log('Returning 404: Video unavailable');
-      return res.status(404).json({ success: false, error: 'Video unavailable' });
+      return res.status(404).json({ success: false, error: 'الفيديو غير متاح. جرب رابط آخر.' });
+    }
+    
+    if (e.message && e.message.includes('Private video')) {
+      console.log('Returning 404: Private video');
+      return res.status(404).json({ success: false, error: 'هذا فيديو خاص. جرب رابط فيديو عام.' });
+    }
+    
+    if (e.message && e.message.includes('age-restricted')) {
+      console.log('Returning 404: Age restricted');
+      return res.status(404).json({ success: false, error: 'هذا الفيديو مقيد بالعمر. جرب رابط آخر.' });
     }
     
     if (e.message && e.message.includes('spawn')) {
@@ -144,7 +154,7 @@ app.post('/api/download', async (req, res) => {
     }
     
     console.log('Returning 500: General error');
-    return res.status(500).json({ success: false, error: 'An error occurred while processing your request: ' + e.message });
+    return res.status(500).json({ success: false, error: 'حدث خطأ أثناء معالجة طلبك. تأكد من أن الرابط صحيح وجرب مرة أخرى.' });
   }
 });
 
