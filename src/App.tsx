@@ -174,52 +174,54 @@ function App() {
             </form>
           </div>
 
-          {/* Response Section */}
-          {response && (
-            <div className="border-t border-gray-200 p-6 bg-gray-50">
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
+              <p className="text-xl font-medium text-gray-800 mb-2">جاري المعالجة...</p>
+              <p className="text-gray-600 text-center max-w-md">
+                يتم الآن إعداد الملف المطلوب، يرجى الانتظار قليلاً بينما نجهز التنزيل لل sẵn للاستخدام.
+              </p>
+            </div>
+          )}
+
+          {/* Response Display */}
+          {response && !isLoading && (
+            <div className={`mt-6 p-4 rounded-lg border ${response.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
               {response.success ? (
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-4">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Download Ready!</h3>
-                  <p className="text-gray-600 mb-4">Your {downloadType} has been processed successfully.</p>
-
+                  <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-3" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">جاهز للتحميل!</h3>
+                  <p className="text-gray-600 mb-4">تمت معالجة {downloadType === 'video' ? 'الفيديو' : 'الصوت'} بنجاح.</p>
                   {response.downloadUrl ? (
                     <div className="space-y-3">
                       <a
                         href={response.downloadUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors"
+                        className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                       >
+                        <Download className="w-4 h-4 mr-2" />
+                        تحميل الآن
                         <ExternalLink className="w-4 h-4 mr-2" />
-                        Download File
                       </a>
-                      <button
-                        onClick={resetForm}
-                        className="block w-full text-sm text-gray-500 hover:text-gray-700 transition-colors"
-                      >
-                        Download another file
-                      </button>
+                      <p className="text-sm text-gray-500 mt-2">انقر على الزر أعلاه لتحميل الملف</p>
                     </div>
                   ) : (
-                    <div className="space-y-3">
-                      <p className="text-sm text-gray-600">{response.message}</p>
-                      <button
-                        onClick={resetForm}
-                        className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-                      >
-                        Try Another
-                      </button>
-                    </div>
+                    <p className="text-gray-600">{response.message}</p>
                   )}
+                  <button
+                    onClick={resetForm}
+                    className="mt-4 px-4 py-2 text-blue-600 hover:text-blue-800 transition-colors font-medium"
+                  >
+                    تحميل ملف آخر
+                  </button>
                 </div>
               ) : (
                 <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4">
-                    <AlertCircle className="w-6 h-6 text-red-600" />
-                  </div>
+                  <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-3" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">خطأ</h3>
+                  <p className="text-gray-600">{response.error}</p>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Download Failed</h3>
                   <p className="text-gray-600 mb-4">
                     {response.error || response.message || 'An unexpected error occurred.'}
