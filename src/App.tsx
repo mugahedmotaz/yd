@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Download, Youtube, Music, Video, Loader2, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
 import Logo from './logo-01.svg';
 interface DownloadResponse {
@@ -8,41 +8,12 @@ interface DownloadResponse {
   error?: string;
 }
 
-interface VideoFormat {
-  quality: string;
-  resolution: string;
-  filesize?: number;
-  url: string;
-}
-
-interface VideoInfoResponse {
-  success: boolean;
-  title?: string;
-  thumbnail?: string;
-  duration?: number;
-  videoFormats?: VideoFormat[];
-  error?: string;
-}
-
 function App() {
   const [url, setUrl] = useState('');
   const [downloadType, setDownloadType] = useState<'video' | 'audio'>('video');
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<DownloadResponse | null>(null);
   const [urlError, setUrlError] = useState('');
-  const [quality, setQuality] = useState('720');
-  const [videoInfo, setVideoInfo] = useState<VideoInfoResponse | null>(null);
-  const [isFetchingInfo, setIsFetchingInfo] = useState(false);
-
-  const qualityOptions = [
-    { value: '144', label: '144p' },
-    { value: '240', label: '240p' },
-    { value: '360', label: '360p' },
-    { value: '480', label: '480p' },
-    { value: '720', label: '720p (HD)' },
-    { value: '1080', label: '1080p (Full HD)' },
-    { value: 'best', label: 'أعلى جودة متاحة' },
-  ];
 
   const validateYouTubeUrl = (url: string): boolean => {
     const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/)[a-zA-Z0-9_-]{11}.*$/;
@@ -54,65 +25,22 @@ function App() {
     setUrl(newUrl);
     setUrlError('');
     setResponse(null);
-    setVideoInfo(null);
-    
+
     if (newUrl && !validateYouTubeUrl(newUrl)) {
       setUrlError('Please enter a valid YouTube URL');
-      return;
-    }
-    
-    // If URL is valid, fetch video info
-    if (newUrl && validateYouTubeUrl(newUrl)) {
-      fetchVideoInfo(newUrl);
     }
   };
-  
-  const fetchVideoInfo = async (videoUrl: string) => {
-    setIsFetchingInfo(true);
-    try {
-      const res = await fetch('/api/video-info', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url: videoUrl }),
-      });
-      
-      const data: VideoInfoResponse = await res.json();
-      setVideoInfo(data);
-    } catch (error) {
-      console.error('Error fetching video info:', error);
-    } finally {
-      setIsFetchingInfo(false);
-    }
-  };
-  
-  // Reset video info when download type changes
-  useEffect(() => {
-    if (videoInfo) {
-      setVideoInfo(null);
-    }
-  }, [downloadType]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!url.trim()) {
       setUrlError('Please enter a YouTube URL');
       return;
     }
-    
+
     if (!validateYouTubeUrl(url)) {
       setUrlError('Please enter a valid YouTube URL');
-      return;
-    }
-
-    // If downloading video, check if we have video info
-    if (downloadType === 'video' && !videoInfo?.success) {
-      setResponse({
-        success: false,
-        error: 'Please wait for video information to load before downloading.',
-      });
       return;
     }
 
@@ -128,7 +56,6 @@ function App() {
         body: JSON.stringify({
           url: url.trim(),
           type: downloadType,
-          quality: downloadType === 'video' ? quality : undefined,
         }),
       });
 
@@ -179,9 +106,8 @@ function App() {
                     value={url}
                     onChange={handleUrlChange}
                     placeholder="https://www.youtube.com/watch?v=..."
-                    className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                      urlError ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${urlError ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                      }`}
                     disabled={isLoading}
                   />
                   <Youtube className="absolute right-3 top-3 w-5 h-5 text-gray-400" />
@@ -196,101 +122,36 @@ function App() {
 
               {/* Download Type Selector */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="downloadType" className="block text-sm font-medium text-gray-700 mb-2">
                   Download Type
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
                     onClick={() => setDownloadType('video')}
-                    className={`flex items-center justify-center px-4 py-2 rounded-lg border transition-colors ${
-                      downloadType === 'video' 
-                        ? 'bg-blue-600 text-white border-blue-600' 
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                    }`}
                     disabled={isLoading}
+                    className={`flex items-center justify-center py-3 px-4 rounded-lg border-2 transition-all ${downloadType === 'video'
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                      }`}
                   >
-                    <Video className="w-4 h-4 mr-2" />
+                    <Video className="w-5 h-5 mr-2" />
                     Video
                   </button>
                   <button
                     type="button"
                     onClick={() => setDownloadType('audio')}
-                    className={`flex items-center justify-center px-4 py-2 rounded-lg border transition-colors ${
-                      downloadType === 'audio' 
-                        ? 'bg-blue-600 text-white border-blue-600' 
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                    }`}
                     disabled={isLoading}
+                    className={`flex items-center justify-center py-3 px-4 rounded-lg border-2 transition-all ${downloadType === 'audio'
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                      }`}
                   >
-                    <Music className="w-4 h-4 mr-2" />
+                    <Music className="w-5 h-5 mr-2" />
                     Audio
                   </button>
                 </div>
               </div>
-
-              {/* Video Info */}
-              {videoInfo && videoInfo.success && downloadType === 'video' && (
-                <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                  <div className="flex items-start mb-3">
-                    <img 
-                      src={videoInfo.thumbnail} 
-                      alt={videoInfo.title} 
-                      className="w-24 h-16 object-cover rounded mr-3"
-                    />
-                    <div>
-                      <h3 className="font-medium text-gray-900 line-clamp-2">{videoInfo.title}</h3>
-                      <p className="text-sm text-gray-500">
-                        Duration: {Math.floor((videoInfo.duration || 0) / 60)}:{String(Math.floor((videoInfo.duration || 0) % 60)).padStart(2, '0')}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      الجودات المتاحة:
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {videoInfo.videoFormats?.map((format, index) => (
-                        <span 
-                          key={index} 
-                          className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded"
-                        >
-                          {format.quality}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Quality Selector */}
-              {downloadType === 'video' && (
-                <div className="mb-4">
-                  <label htmlFor="quality" className="block text-sm font-medium text-gray-700 mb-2">
-                    اختر الجودة
-                  </label>
-                  <select
-                    id="quality"
-                    value={quality}
-                    onChange={e => setQuality(e.target.value)}
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-300"
-                    disabled={isLoading || !videoInfo?.success}
-                  >
-                    {qualityOptions.map(opt => (
-                      <option key={opt.value} value={opt.value} disabled={!videoInfo?.success}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                  {isFetchingInfo && (
-                    <p className="mt-2 text-sm text-blue-600 flex items-center">
-                      <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                      جاري جلب معلومات الفيديو...
-                    </p>
-                  )}
-                </div>
-              )}
 
               {/* Submit Button */}
               <button
@@ -323,7 +184,7 @@ function App() {
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Download Ready!</h3>
                   <p className="text-gray-600 mb-4">Your {downloadType} has been processed successfully.</p>
-                  
+
                   {response.downloadUrl ? (
                     <div className="space-y-3">
                       <a
@@ -381,7 +242,7 @@ function App() {
             Supports YouTube videos and playlists
           </p>
           <p className='text-sm text-gray-500 mt-2'>&copy;  2025 Create By <a href="https://www.linkedin.com/in/mugahed-motaz/?original_referer=https%3A%2F%2Fwww%2Egoogle%2Ecom%2F&originalSubdomain=sd">Mugahed motaz</a></p>
-        <img src={Logo} alt="" className='w-20 h-20 m-auto'/>
+          <img src={Logo} alt="" className='w-20 h-20 m-auto' />
         </div>
       </div>
     </div>
