@@ -47,7 +47,7 @@ function App() {
     setUrlError('');
 
     try {
-      const apiResponse = await fetch('yd-production.up.railway.app/api/download', {
+      const apiResponse = await fetch('https://yd-production.up.railway.app/api/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
