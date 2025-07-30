@@ -1,12 +1,10 @@
-# استخدم صورة node الرسمية
-FROM node:20
+# استخدم صورة Node.js الرسمية المبنية على Debian
+FROM node:18
 
-# تحديث النظام وتثبيت Python 3 و ffmpeg
-RUN apt-get update && \
-    apt-get install -y python3 python3-pip ffmpeg && \
-    apt-get clean
+# تثبيت Python3 وأدوات أخرى
+RUN apt-get update && apt-get install -y python3 python3-pip ffmpeg
 
-# تحديد مجلد العمل داخل الحاوية
+# تعيين مجلد العمل
 WORKDIR /app
 
 # نسخ ملفات المشروع
@@ -15,5 +13,8 @@ COPY . .
 # تثبيت الحزم
 RUN npm install
 
+# تعيين المنفذ
+EXPOSE 8080
+
 # تشغيل التطبيق
-CMD ["node", "backend/server.js"]
+CMD ["npm", "start"]
