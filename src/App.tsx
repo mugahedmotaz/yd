@@ -47,7 +47,7 @@ function App() {
     setUrlError('');
 
     try {
-      const apiResponse = await fetch('/api/download', {
+      const apiResponse = await fetch('https://mugahed-download.onrender.com/api/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
