@@ -10,8 +10,17 @@ app.use(cors());
 app.use(express.json());
 
 // Endpoint to handle download requests
+const cleanYoutubeUrl = (url) => {
+  const videoIdMatch = url.match(/(?:https?):\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|music\.youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/);
+  if (videoIdMatch && videoIdMatch[1]) {
+    return `https://www.youtube.com/watch?v=${videoIdMatch[1]}`;
+  }
+  return url; // Return original url if no match
+};
+
 app.post('/api/download', async (req, res) => {
-  const { url, type } = req.body;
+  const { url: originalUrl, type } = req.body;
+  const url = cleanYoutubeUrl(originalUrl);
 
   if (!url || typeof url !== 'string' || !url.startsWith('http')) {
     return res.status(400).json({ success: false, error: 'Invalid YouTube URL' });
