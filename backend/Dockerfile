@@ -1,20 +1,20 @@
-# استخدم صورة Node.js الرسمية المبنية على Debian
-FROM node:18
+# استخدم صورة تحتوي على Node.js و Python معًا
+FROM node:18-bullseye
 
-# تثبيت Python3 وأدوات أخرى
-RUN apt-get update && apt-get install -y python3 python3-pip ffmpeg
+# تثبيت python3 و ffmpeg (مطلوب لليوتيوب-دي إل)
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    ffmpeg
 
-# تعيين مجلد العمل
+# إنشاء مجلد العمل
 WORKDIR /app
 
-# نسخ ملفات المشروع
+# نسخ الملفات إلى داخل الحاوية
 COPY . .
 
 # تثبيت الحزم
 RUN npm install
-
-# تعيين المنفذ
-EXPOSE 8080
 
 # تشغيل التطبيق
 CMD ["npm", "start"]
