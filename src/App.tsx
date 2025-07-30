@@ -47,7 +47,7 @@ function App() {
     setUrlError('');
 
     try {
-            const apiResponse = await fetch('/api/download', {
+                  const apiResponse = await fetch('https://YOUR_RAILWAY_BACKEND_URL/api/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
