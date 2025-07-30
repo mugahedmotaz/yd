@@ -231,9 +231,10 @@ function App() {
           <p className="text-sm text-gray-500">
             Supports YouTube videos and playlists
           </p>
-          <p className='text-sm text-gray-500 mt-2'>&copy;  2025 Create By <a href="https://www.linkedin.com/in/mugahed-motaz/?original_referer=https%3A%2F%2Fwww%2Egoogle%2Ecom%2F&originalSubdomain=sd" className="text-blue-600 hover:underline">Mugahed motaz</a></p>
-          <img src={Logo} alt="" className='w-20 h-20 m-auto' />
+          <p className="text-sm text-gray-500 mt-2">&copy;  2025 Create By <a href="https://www.linkedin.com/in/mugahed-motaz/?original_referer=https%3A%2F%2Fwww%2Egoogle%2Ecom%2F&originalSubdomain=sd" className="text-sm text-blue-500 mt-2">Mugahed motaz</a></p>
+          <img src={Logo} alt="" className='w-14 m-auto pt-6' />
         </div>
+        
       </div>
     </div>
   );
