@@ -5,18 +5,13 @@ interface DownloadResponse {
   success: boolean;
   downloadUrl?: string;
   message?: string;
-  error?: string;
 }
 
 function App() {
   const [url, setUrl] = useState('');
-  const [downloadType, setDownloadType] = useState<'video' | 'audio'>('video');
   const [isLoading, setIsLoading] = useState(false);
-  const [response, setResponse] = useState<DownloadResponse | null>(null);
-  const [urlError, setUrlError] = useState('');
-
-  const validateYouTubeUrl = (url: string): boolean => {
-    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/)[a-zA-Z0-9_-]{11}.*$/;
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState('');
     return youtubeRegex.test(url);
   };
 
@@ -132,8 +127,8 @@ function App() {
                     onClick={() => setDownloadType('video')}
                     disabled={isLoading}
                     className={`flex items-center justify-center py-3 px-4 rounded-lg border-2 transition-all ${downloadType === 'video'
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-200 hover:border-gray-300 text-gray-700'
                       }`}
                   >
                     <Video className="w-5 h-5 mr-2" />
@@ -144,8 +139,8 @@ function App() {
                     onClick={() => setDownloadType('audio')}
                     disabled={isLoading}
                     className={`flex items-center justify-center py-3 px-4 rounded-lg border-2 transition-all ${downloadType === 'audio'
-                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                        : 'border-gray-200 hover:border-gray-300 text-gray-700'
+                      ? 'border-blue-500 bg-blue-50 text-blue-700'
+                      : 'border-gray-200 hover:border-gray-300 text-gray-700'
                       }`}
                   >
                     <Music className="w-5 h-5 mr-2" />
@@ -181,7 +176,7 @@ function App() {
               <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
               <p className="text-xl font-medium text-gray-800 mb-2">جاري المعالجة...</p>
               <p className="text-gray-600 text-center max-w-md">
-                يتم الآن إعداد الملف المطلوب<br/> يرجى الانتظار قليلاً بينما نجهز التنزيل   للاستخدام.
+                يتم الآن إعداد الملف المطلوب<br /> يرجى الانتظار قليلاً بينما نجهز التنزيل   للاستخدام.
               </p>
             </div>
           )}
