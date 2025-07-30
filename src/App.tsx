@@ -1,39 +1,42 @@
 import React, { useState } from 'react';
-import { Download, Youtube, Music, Video, Loader2, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react';
+import { Download, Youtube, Music, Video, Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import Logo from './logo-01.svg';
+
 interface DownloadResponse {
   success: boolean;
   downloadUrl?: string;
+  error?: string;
   message?: string;
 }
 
 function App() {
   const [url, setUrl] = useState('');
+  const [urlError, setUrlError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<any>(null);
-  const [error, setError] = useState('');
-    return youtubeRegex.test(url);
+  const [response, setResponse] = useState<DownloadResponse | null>(null);
+  const [downloadType, setDownloadType] = useState<'video' | 'audio'>('video');
+
+  const validateYouTubeUrl = (urlToValidate: string) => {
+    if (!urlToValidate) return false;
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be|music\.youtube\.com)\/.+$/;
+    return youtubeRegex.test(urlToValidate);
   };
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newUrl = e.target.value;
     setUrl(newUrl);
-    setUrlError('');
-    setResponse(null);
-
-    if (newUrl && !validateYouTubeUrl(newUrl)) {
+    setResponse(null); // Reset response on new URL
+    if (validateYouTubeUrl(newUrl)) {
+      setUrlError('');
+    } else if (newUrl.trim() !== '') {
       setUrlError('Please enter a valid YouTube URL');
+    } else {
+      setUrlError('');
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!url.trim()) {
-      setUrlError('Please enter a YouTube URL');
-      return;
-    }
-
     if (!validateYouTubeUrl(url)) {
       setUrlError('Please enter a valid YouTube URL');
       return;
@@ -41,9 +44,10 @@ function App() {
 
     setIsLoading(true);
     setResponse(null);
+    setUrlError('');
 
     try {
-      const response = await fetch("https://mugahed-download.onrender.com/api/download", {
+      const apiResponse = await fetch('https://mugahed-download.onrender.com/api/download', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +58,7 @@ function App() {
         }),
       });
 
-      const data: DownloadResponse = await response.json();
+      const data: DownloadResponse = await apiResponse.json();
       setResponse(data);
     } catch (error) {
       setResponse({
@@ -102,8 +106,7 @@ function App() {
                     autoComplete='off'
                     onChange={handleUrlChange}
                     placeholder="https://www.youtube.com/watch?v=..."
-                    className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${urlError ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                      }`}
+                    className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${urlError ? 'border-red-300 bg-red-50' : 'border-gray-300'}`}
                     disabled={isLoading}
                   />
                   <Youtube className="absolute right-3 top-3 w-5 h-5 text-gray-400" />
@@ -121,29 +124,21 @@ function App() {
                 <label htmlFor="downloadType" className="block text-sm font-medium text-gray-700 mb-2">
                   Download Type
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="flex rounded-lg border border-gray-300 p-1 bg-gray-100">
                   <button
                     type="button"
                     onClick={() => setDownloadType('video')}
-                    disabled={isLoading}
-                    className={`flex items-center justify-center py-3 px-4 rounded-lg border-2 transition-all ${downloadType === 'video'
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                      }`}
+                    className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ease-in-out ${downloadType === 'video' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:bg-gray-200'}`}
                   >
-                    <Video className="w-5 h-5 mr-2" />
+                    <Video className="w-5 h-5 inline-block mr-2" />
                     Video
                   </button>
                   <button
                     type="button"
                     onClick={() => setDownloadType('audio')}
-                    disabled={isLoading}
-                    className={`flex items-center justify-center py-3 px-4 rounded-lg border-2 transition-all ${downloadType === 'audio'
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                      }`}
+                    className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ease-in-out ${downloadType === 'audio' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:bg-gray-200'}`}
                   >
-                    <Music className="w-5 h-5 mr-2" />
+                    <Music className="w-5 h-5 inline-block mr-2" />
                     Audio
                   </button>
                 </div>
@@ -152,18 +147,18 @@ function App() {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={isLoading || !!urlError || !url.trim()}
-                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-medium py-3 px-4 rounded-lg transition-colors flex items-center justify-center"
+                disabled={isLoading || !!urlError || !url}
+                className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all disabled:bg-blue-300 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    جاري المعالجة...
+                    Processing...
                   </>
                 ) : (
                   <>
                     <Download className="w-5 h-5 mr-2" />
-                    Download {downloadType === 'video' ? 'Video' : 'Audio'}
+                    Download
                   </>
                 )}
               </button>
@@ -172,18 +167,18 @@ function App() {
 
           {/* Loading State */}
           {isLoading && (
-            <div className="flex flex-col items-center justify-center py-12">
-              <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
+            <div className="p-6 text-center">
+              <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4 mx-auto" />
               <p className="text-xl font-medium text-gray-800 mb-2">جاري المعالجة...</p>
-              <p className="text-gray-600 text-center max-w-md">
-                يتم الآن إعداد الملف المطلوب<br /> يرجى الانتظار قليلاً بينما نجهز التنزيل   للاستخدام.
+              <p className="text-gray-600">
+                يرجى الانتظار قليلاً بينما نجهز التنزيل.
               </p>
             </div>
           )}
 
           {/* Response Display */}
           {response && !isLoading && (
-            <div className={`mt-6 p-4 rounded-lg border ${response.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+            <div className={`p-6 border-t ${response.success ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
               {response.success ? (
                 <div className="text-center">
                   <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-3" />
@@ -195,16 +190,15 @@ function App() {
                         href={response.downloadUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                        className="inline-flex items-center justify-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-bold"
                       >
-                        <Download className="w-4 h-4 mr-2" />
+                        <Download className="w-5 h-5 mr-2" />
                         تحميل الآن
-                        <ExternalLink className="w-4 h-4 mr-2" />
                       </a>
                       <p className="text-sm text-gray-500 mt-2">انقر على الزر أعلاه لتحميل الملف</p>
                     </div>
                   ) : (
-                    <p className="text-gray-600">{response.message}</p>
+                    <p className="text-red-600">{response.message || 'Could not find a download link.'}</p>
                   )}
                   <button
                     onClick={resetForm}
@@ -216,9 +210,7 @@ function App() {
               ) : (
                 <div className="text-center">
                   <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-3" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">خطأ</h3>
-                  <p className="text-gray-600">{response.error}</p>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Download Failed</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">فشل التحميل</h3>
                   <p className="text-gray-600 mb-4">
                     {response.error || response.message || 'An unexpected error occurred.'}
                   </p>
@@ -226,7 +218,7 @@ function App() {
                     onClick={() => setResponse(null)}
                     className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
                   >
-                    Try Again
+                    المحاولة مرة أخرى
                   </button>
                 </div>
               )}
@@ -239,7 +231,7 @@ function App() {
           <p className="text-sm text-gray-500">
             Supports YouTube videos and playlists
           </p>
-          <p className='text-sm text-gray-500 mt-2'>&copy;  2025 Create By <a href="https://www.linkedin.com/in/mugahed-motaz/?original_referer=https%3A%2F%2Fwww%2Egoogle%2Ecom%2F&originalSubdomain=sd">Mugahed motaz</a></p>
+          <p className='text-sm text-gray-500 mt-2'>&copy;  2025 Create By <a href="https://www.linkedin.com/in/mugahed-motaz/?original_referer=https%3A%2F%2Fwww%2Egoogle%2Ecom%2F&originalSubdomain=sd" className="text-blue-600 hover:underline">Mugahed motaz</a></p>
           <img src={Logo} alt="" className='w-20 h-20 m-auto' />
         </div>
       </div>
