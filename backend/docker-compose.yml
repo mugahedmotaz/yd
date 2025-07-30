@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  youtube-downloader-backend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PYTHON=/usr/bin/python3
+      - YOUTUBE_DL_SKIP_PYTHON_CHECK=1
+    volumes:
+      # إذا كنت تريد حفظ الملفات المحملة خارج الحاوية
+      - ./downloads:/app/downloads
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# للتطوير فقط
+  youtube-downloader-dev:
+    build: .
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - PYTHON=/usr/bin/python3
+      - YOUTUBE_DL_SKIP_PYTHON_CHECK=1
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev
+    profiles:
+      - dev

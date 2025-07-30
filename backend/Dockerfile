@@ -6,7 +6,12 @@ RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
     ffmpeg \
-    && pip3 install yt-dlp
+    && pip3 install yt-dlp \
+    && ln -s /usr/bin/python3 /usr/bin/python
+
+# تعيين متغير البيئة لـ Python
+ENV PYTHON=/usr/bin/python3
+ENV YOUTUBE_DL_SKIP_PYTHON_CHECK=1
 
 # إنشاء مجلد العمل
 WORKDIR /app
